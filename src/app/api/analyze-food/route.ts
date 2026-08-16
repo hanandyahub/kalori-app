@@ -2,8 +2,6 @@ import { auth } from "@clerk/nextjs/server";
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 const SYSTEM_PROMPT = `Kamu adalah ahli gizi yang menganalisis foto makanan. Lihat foto yang diberikan, kenali setiap item makanan/minuman yang terlihat, perkirakan porsinya dalam gram, dan hitung estimasi kalori serta makronutrien totalnya. Kalau bukan foto makanan, tetap isi field dengan estimasi terbaikmu dan set confidence ke "low". Selalu jawab dalam Bahasa Indonesia untuk field teks.`;
 
 const RESPONSE_SCHEMA = {
@@ -56,6 +54,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
