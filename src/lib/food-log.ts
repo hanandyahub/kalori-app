@@ -3,7 +3,6 @@ import {
   addDoc,
   query,
   where,
-  orderBy,
   getDocs,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -25,14 +24,12 @@ export async function saveFoodLog(
 }
 
 export async function getFoodLogs(userId: string): Promise<FoodLogEntry[]> {
-  const q = query(
-    collection(db, COLLECTION),
-    where("userId", "==", userId),
-    orderBy("createdAt", "desc")
-  );
+  const q = query(collection(db, COLLECTION), where("userId", "==", userId));
   const snapshot = await getDocs(q);
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...(doc.data() as Omit<FoodLogEntry, "id">),
-  }));
+  return snapshot.docs
+    .map((doc) => ({
+      id: doc.id,
+      ...(doc.data() as Omit<FoodLogEntry, "id">),
+    }))
+    .sort((a, b) => b.createdAt - a.createdAt);
 }
